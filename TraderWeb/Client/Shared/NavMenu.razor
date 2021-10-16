@@ -1,0 +1,72 @@
+﻿<div class="top-row pl-4 navbar" style="background-color: rgb(20, 21, 26)">
+	<a class="navbar-brand text-success font-weight-bold pl-5" href="">Trader</a>
+	<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+	<nav class="flex-column">
+		@*       <div class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+			<span class="oi oi-home" aria-hidden="true"></span> Home
+			</NavLink>
+			</div>*@
+		@*    <div class="nav-item px-3">
+			<NavLink class="nav-link" href="counter">
+			<span class="oi oi-plus" aria-hidden="true"></span> Counter
+			</NavLink>
+			</div>*@
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="allplayers">
+				<span class="oi oi-person text-warning"></span><span class="text-warning">Players</span>
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="allconfigs">
+				<span class="oi oi-cog text-danger"></span> Config
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="allsignals">
+				<span class="oi oi-graph text-info"></span> Signals
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="allcoinprices">
+				<span class="oi oi-compass text-warning"></span>Coin Prices
+			</NavLink>
+		</div>
+
+	<div class="nav-item px-3">
+			<NavLink class="nav-link" href="buydecisions">
+				<span class="oi oi-bold text-success"></span> Buy Decisions
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link " href="Surgers">
+				
+				<span class="oi oi-bar-chart text-danger"></span>Surgers
+			</NavLink>
+		</div>
+
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="GlobalSig">
+				<span class="oi oi-sun text-warning"></span> Global Signals
+			</NavLink>
+		</div>
+	</nav>
+</div>
+
+@code {
+	private bool collapseNavMenu = true;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+}

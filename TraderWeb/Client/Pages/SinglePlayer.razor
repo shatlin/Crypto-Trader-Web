@@ -1,0 +1,37 @@
+﻿@page "/SinglePlayer/{id:int}"
+@inject IPlayerService PlayerService
+
+<h1>Player</h1>
+
+@if(player==null)
+{
+    <span> Loading Player ...</span>
+}
+else
+{
+<h3>@player.Name</h3>
+}
+
+
+@code {
+
+    public Player player = null;
+
+    [Parameter]
+    public int id{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"This is my id {id} ");
+        try
+        {
+        player = await PlayerService.GetSinglePlayer(id);
+        }
+        catch(Exception ex)
+        {
+             Console.WriteLine($"This is my exception {ex.Message} ");
+        }
+
+        Console.WriteLine($"This is my botname {player.Name} ");
+    }
+}

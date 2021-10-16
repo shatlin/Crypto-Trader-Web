@@ -1,0 +1,13 @@
+﻿@if (check)
+{
+	<td class="  font-weight-bold  text-light"><span class="badge badge-success">Yes</span></td>
+}
+else
+{
+	<td class="  font-weight-bold  text-light"><span class="badge badge-danger">No</span></td>
+}
+
+@code {
+	[Parameter]
+	public bool check { get; set; } 
+}

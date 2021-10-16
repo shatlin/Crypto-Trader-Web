@@ -1,0 +1,160 @@
+﻿@page "/Surgers"
+@inject ISignalService SignalService
+@inject NavigationManager NavigationManager
+@using System.Threading;
+	@inject IToastService toastService
+
+<PageTitle Value="Surgers" />
+
+<style>
+
+
+	.wrapper {
+		height: 400px;
+		overflow: auto;
+	}
+
+	.center {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		padding: 10px;
+	}
+
+</style>
+
+@{
+	string headerstyle = "text-warning font-weight-bold small header sort-link";
+}
+
+@if (CoinPrices.Count == 0)
+{
+	<Loader></Loader>
+}
+else
+{
+	<div class="wrapper">
+		<table class="table table-bordered-sm table-compact table-sm">
+			<thead class="header bg-dark thead-dark">
+				<tr>
+					<th class=@headerstyle @onclick='(()=>SortTable("CoinRank"))'>Rank<span class="@(SetSortIcon("CoinRank"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Pair"))'>Pair<span class="@(SetSortIcon("Pair"))"></span></th>
+					<th class=@headerstyle>Signal</th>
+					<th class=@headerstyle>Buy</th>
+					<th class=@headerstyle>NoBuy</th>
+					<th class=@headerstyle @onclick='(()=>SortTable("BuyDialog"))'>Dialog<span class="@(SetSortIcon("BuyDialog"))"></span></th>
+					<th class=@headerstyle>Cr Pr</th>
+					<th class=@headerstyle>Day Low</th>
+					<th class=@headerstyle>Day High</th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Five_OneMinPriceChange"))'>5 Min Ch<span class="@(SetSortIcon("Five_OneMinPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Ten_OneMinPriceChange"))'>10 Min Ch<span class="@(SetSortIcon("Ten_OneMinPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Fifteen_OneMinPriceChange"))'>15 Min Ch<span class="@(SetSortIcon("Ten_OneMinPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("OneMinPriceChange"))'>30 Min Ch<span class="@(SetSortIcon("OneMinPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("FifteenMinPriceChange"))'>45 Min Ch<span class="@(SetSortIcon("FifteenMinPriceChange"))"></span> </th>
+					<th class=@headerstyle @onclick='(()=>SortTable("OneHourPriceChange"))'>24 Hr Ch <span class="@(SetSortIcon("OneHourPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("FourHourPriceChange"))'>48 Hr Ch <span class="@(SetSortIcon("OneHourPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("DayPriceChange"))'>7 Day Ch <span class="@(SetSortIcon("DayPriceChange"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("DayTradeCount"))'>Trade Count <span class="@(SetSortIcon("DayTradeCount"))"></span></th>
+
+				</tr>
+			</thead>
+			<tbody>
+
+				@foreach (var coinprice in CoinPrices)
+				{
+					string link = "https://www.binance.com/en/trade/" + @coinprice.Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
+					string url = "ViewSignal/" + @coinprice.Pair;
+					string theme = "small text-light";
+
+					<tr>
+						<td class="@theme">@coinprice.CoinRank</td>
+						<td><a href=@link target="_blank" class="font-weight-bold small text-success"> @coinprice.Pair.Replace("USDT", "")</a></td>
+						<td><a href=@url target="_blank"><span class="text-info oi oi-dashboard"></span></a></td>
+						<td><button class="btn btn-link btn-sm p-0" @onclick="(()=>MarkToBuy(coinprice.Pair))"><span class="text-successs oi oi-circle-check"></span></button> </td>
+						<td><button class="btn btn-link btn-sm p-0" @onclick="(()=>CancelBuy(coinprice.Pair))"><span class="text-danger oi oi-circle-x"></span></button> </td>
+						<td class="@theme">@((MarkupString)coinprice.BuyDialog)</td>
+						
+						<td class="@theme">@Math.Round(coinprice.ClosePrice,3)</td>
+						<td class="@theme">@Math.Round(coinprice.DayMin,3)</td>
+						<td class="@theme">@Math.Round(coinprice.DayMax,3)</td>
+						<CoinTDDec value=coinprice.Five_OneMinPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.Ten_OneMinPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.Fifteen_OneMinPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.OneMinPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FifteenMinPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.OneHourPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FourHourPriceChange></CoinTDDec>
+						<CoinTDDec value=coinprice.DayPriceChange></CoinTDDec>
+						<td class="@theme">@Math.Round(coinprice.DayTradeCount,0)</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+<br />
+<ViewSignal signalCandle=candle></ViewSignal>
+
+@code {
+
+	public List<CoinPrice> CoinPrices { get; set; } = new List<CoinPrice>();
+	private bool IsSortedAscending;
+	private string CurrentSortColumn;
+
+	public List<SignalCandle> candle { get; set; } = new List<SignalCandle>();
+
+	private string SetSortIcon(string columnName)
+	{
+		if (CurrentSortColumn != columnName) return string.Empty;
+		if (IsSortedAscending) return "text-warning oi oi-sort-ascending";
+		else return "text-warning oi oi-sort-descending";
+	}
+
+	private void SortTable(string columnName)
+	{
+		if (columnName != CurrentSortColumn)
+		{
+			CoinPrices = CoinPrices.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+			CurrentSortColumn = columnName;
+			IsSortedAscending = true;
+		}
+		else
+		{
+			if (IsSortedAscending) CoinPrices = CoinPrices.OrderByDescending(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+			else CoinPrices = CoinPrices.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+			IsSortedAscending = !IsSortedAscending;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		System.Timers.Timer t = new System.Timers.Timer();
+		t.Interval = 30000;
+		t.Elapsed += async (s, e) =>
+		{
+			CoinPrices = await SignalService.GetSurgers();
+			candle=await SignalService.GetSignals("BTCUSDT");
+			await InvokeAsync(StateHasChanged);
+		};
+		t.Start();
+		candle=await SignalService.GetSignals("BTCUSDT");
+		CoinPrices = await SignalService.GetSurgers();
+	}
+
+
+
+	public async Task MarkToBuy(string pair)
+	{
+		var coin = await SignalService.MarkCoinToBuy(pair);
+		toastService.ShowInfo($"{pair.Replace("USDT", "")} marked to buy");
+	}
+
+	public async Task CancelBuy(string pair)
+	{
+		var coin = await SignalService.CancelBuy(pair);
+		toastService.ShowError($"{pair.Replace("USDT", "")} unmarked from buy", "No buy");
+	}
+
+}

@@ -1,0 +1,69 @@
+﻿@page "/allconfigs"
+@inject IConfigService ConfigService
+@inject NavigationManager NavigationManager
+
+<PageTitle Value="Config" />
+
+@*@if(AllConfig.Count==0)
+{
+    <span> Loading Config ...</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Max Pauses</th>
+                <th>Bot Name</th>
+                <th>Max Loss Before Stop</th>
+                <th></th>
+			</tr>
+		</thead>
+        <tbody>
+            @foreach(var conf in AllConfig)
+            {
+                <tr>  
+                    <td>@conf.MaxPauses</td>
+                    <td>@conf.Botname</td>
+                    <td>@conf.MaxConsecutiveLossesBeforePause</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(()=>EditConfig(conf.id))">Edit</button>
+					</td>
+				</tr>
+            }
+        </tbody> 
+	</table>
+}*@
+
+<EditConfig conf="configtoEdit" >
+</EditConfig>
+
+@code {
+
+
+    public Config configtoEdit { get; set; } = new Config();
+    public List<Config> AllConfig=new List<Config>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllConfig=await ConfigService.GetConfigs();
+        ConfigService.OnChange += StateHasChanged;
+         configtoEdit=  ConfigService.configs.Find(x=>x.id==1);
+    }
+
+    void ShowConfig(int id)
+    {
+        NavigationManager.NavigateTo($"singleconfig/{id}");
+    }
+
+    void EditConfig(int id)
+    {
+        Console.WriteLine(id);
+        configtoEdit=  ConfigService.configs.Find(x=>x.id==id);
+    }
+
+    public void Dispose()
+    {
+        ConfigService.OnChange-=StateHasChanged;
+    }
+}

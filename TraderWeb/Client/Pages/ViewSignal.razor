@@ -1,0 +1,376 @@
+﻿@page "/ViewSignal/{pair}"
+@inject ISignalService SignalService
+@inject IJSRuntime JSRuntime
+@*<PageTitle Value="@GetPageTitle()" />*@
+
+<EditForm Model="@signalCandle">
+
+	@{
+		if (signalCandle.Count > 0)
+		{
+			int i = 1;
+			var onemins = signalCandle.Where(x => x.CandleType == "1min").OrderByDescending(x => x.CloseTime);
+			var fivemins = signalCandle.Where(x => x.CandleType == "5min").OrderByDescending(x => x.CloseTime).Take(12);
+			var fifteenmins = signalCandle.Where(x => x.CandleType == "15min").OrderByDescending(x => x.CloseTime);
+			var thirtymins = signalCandle.Where(x => x.CandleType == "30min").OrderByDescending(x => x.CloseTime);
+			var onehours = signalCandle.Where(x => x.CandleType == "1hour").OrderByDescending(x => x.CloseTime);
+			var fourhours = signalCandle.Where(x => x.CandleType == "4hour").OrderByDescending(x => x.CloseTime);
+			var days = signalCandle.Where(x => x.CandleType == "day").OrderByDescending(x => x.CloseTime).Take(7);
+
+			var onemindiff = ((onemins.First().ClosePrice - onemins.Last().ClosePrice) / (onemins.Last().ClosePrice)) * 100;
+			var fivemindiff = ((fivemins.First().ClosePrice - fivemins.Last().ClosePrice) / (fivemins.Last().ClosePrice)) * 100;
+			var fifteenmindiff = ((fifteenmins.First().ClosePrice - fifteenmins.Last().ClosePrice) / (fifteenmins.Last().ClosePrice)) * 100;
+			var thirtymindiff = ((thirtymins.First().ClosePrice - thirtymins.Last().ClosePrice) / (thirtymins.Last().ClosePrice)) * 100;
+			var onehourdiff = ((onehours.First().ClosePrice - onehours.Last().ClosePrice) / (onehours.Last().ClosePrice)) * 100;
+			var fourhourdiff = ((fourhours.First().ClosePrice - fourhours.Last().ClosePrice) / (fourhours.Last().ClosePrice)) * 100;
+			var daydiff = ((days.First().ClosePrice - days.Last().ClosePrice) / (days.Last().ClosePrice)) * 100;
+
+			string link = string.Empty;
+				link = "https://www.binance.com/en/trade/" + @signalCandle[0].Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
+				
+
+			<div class="row">
+
+				<div class=col-3>
+					<h6>
+						<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						<span class="badge badge-warning">One Mins - last 30 min</span>
+						&nbsp;
+						@if (onemindiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(onemindiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(onemindiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in onemins)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0 text-success small font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-success small font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 text-success small font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small font-weight-bold"><span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 text-danger small font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-danger small font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 text-danger small font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small font-weight-bold"> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+				</div>
+
+				<div class=col-3>
+
+					<h6>
+						<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						<span class="badge badge-warning">Five Mins - Last 1 Hour</span> 
+						&nbsp;
+						@if (fivemindiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(fivemindiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(fivemindiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in fivemins)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0 text-success small font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-success  small  font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+
+									<td class=" p-0 m-0  text-success  small font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0  small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 small text-danger font-weight-bold">@i</td>
+									<td class=" p-0 m-0 small text-danger font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 small text-danger font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small"> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+					<h6>
+						<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						&nbsp;
+						<span class="badge badge-warning">Fifteen Mins - Last 4 Hours</span>&nbsp;
+						@if (fifteenmindiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(fifteenmindiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(fifteenmindiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in fifteenmins)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0  small text-success font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-success font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+
+									<td class=" p-0 m-0  small  text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 text-danger  small font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-danger  small font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 text-danger  small font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+				</div>
+
+
+				<div class=col-3>
+
+					<h6>
+					<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						&nbsp;
+						<span class="badge badge-warning">Thirty Mins - Last 12 Hours</span> 
+					&nbsp;
+						@if (thirtymindiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(thirtymindiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(thirtymindiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in thirtymins)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0 text-success  small font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-success  small font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+
+									<td class=" p-0 m-0  text-success small  font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 small  text-danger font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+
+					<h6>
+						<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						&nbsp;
+						<span class="badge badge-warning">Four Hour - Last 2 Days </span>
+						&nbsp;
+						@if (fourhourdiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(fourhourdiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(fourhourdiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in fourhours)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0  small text-success font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-success font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+
+									<td class=" p-0 m-0  small  text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+				</div>
+
+				<div class=col-3>
+
+					<h6>
+					<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						&nbsp;
+						<span class="badge badge-warning">One Hour - Last 24 Hours </span>
+						&nbsp;
+
+						@if (onehourdiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(onehourdiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(onehourdiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in onehours)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0 small  text-success font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-success font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+
+									<td class=" p-0 m-0  small  text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+									<td class=" p-0 m-0  small text-danger font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+
+
+
+					<h6>
+					<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						&nbsp;
+						<span class="badge badge-warning">One Day - Last Week</span>
+					&nbsp;
+						@if (daydiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(daydiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(daydiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in days)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0  small text-success font-weight-bold">@i</td>
+									<td class=" p-0 m-0  small text-success font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+
+									<td class=" p-0 m-0   small text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 text-danger  small  font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-danger  small font-weight-bold">@item.CloseTime.ToString("dd-MMM HH:mm")</td>
+									<td class=" p-0 m-0 text-danger  small  font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+				</div>
+
+			</div>
+
+		}
+	}
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public List<SignalCandle> signalCandle { get; set; } = new List<SignalCandle>();
+	[Parameter]
+	public string pair { get; set; }
+
+	private string GetPageTitle() => string.IsNullOrEmpty(pair) ? "View Signals" : $"View {pair.Replace("USDT", "")}";
+
+	  protected override async Task OnInitializedAsync()
+    {
+		if(!string.IsNullOrEmpty(pair))
+		{
+			signalCandle=await SignalService.GetSignals(pair);
+		}
+		
+    }
+
+}

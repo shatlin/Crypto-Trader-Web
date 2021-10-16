@@ -1,0 +1,91 @@
+﻿@page "/allsignals"
+@inject ISignalService SignalService
+@inject NavigationManager NavigationManager
+@using System.Threading;
+
+<PageTitle Value="Signals" />
+
+@if (AllPairs.Count == 0)
+{
+	<Loader></Loader>
+}
+else
+{
+	@*	<select class="form-control p-0 m0" @onchange="GetSignals">
+		<option>Please select Pair</option>
+		@foreach (var pair in AllPairs)
+		{
+		<option value="@pair">@pair</option>
+		}
+		</select>*@
+	<div class=row>
+		<div class=col-12>
+			@foreach (var pair in AllPairs)
+			{
+				<button class="badge badge-danger m-1 b-0 mr-1 p-1 pl-1 pr-1 small" @onclick="(()=>GetCoinSignals(pair))">@pair.Replace("USDT","")</button>
+			}
+			@if (!string.IsNullOrEmpty(pairToView))
+			{
+			@*	<button class="badge badge-primary  m-1 p-1 small" @onclick="(()=>RefreshCoinSignals())">Refresh @pairToView.Replace("USDT","")</button>
+
+*@
+				string link = string.Empty;
+				link = "https://www.binance.com/en/trade/" + pairToView.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
+
+				<a href=@link target="_blank" class="badge badge-primary  m-1 p-1 small">View @pairToView.Replace("USDT","")</a>
+
+			}
+		</div>
+	</div>
+	<div class=row>
+		<div class=col-11>
+			<ViewSignal signalCandle="@signal">
+			</ViewSignal>
+		</div>
+	</div>
+}
+
+
+@code {
+
+
+	public string pairToView { get; set; }
+	public List<String> AllPairs = new List<String>();
+	public List<SignalCandle> signal { get; set; } = new List<SignalCandle>();
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		System.Timers.Timer t = new System.Timers.Timer();
+		t.Interval = 1000;
+		t.Elapsed += async (s, e) =>
+		{
+			await RefreshCoinSignals();
+			await InvokeAsync(StateHasChanged);
+		};
+		t.Start();
+
+		AllPairs = await SignalService.GetPairs();
+	}
+
+	//private async Task GetSignals(ChangeEventArgs e)
+	//{
+	//	pairToView = e.Value.ToString();
+	//	signal = await SignalService.GetSignals(pairToView);
+	//}
+
+	private async Task GetCoinSignals(string pair)
+	{
+		pairToView = pair;
+		signal = await SignalService.GetSignals(pairToView);
+	}
+
+	private async Task RefreshCoinSignals()
+	{
+		if (!string.IsNullOrEmpty(pairToView))
+		{
+			signal = await SignalService.GetSignals(pairToView);
+		}
+	}
+
+}

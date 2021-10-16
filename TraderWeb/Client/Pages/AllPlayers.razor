@@ -1,0 +1,339 @@
+﻿@page "/"
+@page "/allplayers"
+@inject IPlayerService PlayerService
+@inject NavigationManager NavigationManager
+@inject IToastService toastService
+@inject ISignalService SignalService
+
+@using System.Threading;
+<style>
+
+	.wrapper {
+		height: 700px;
+		overflow: auto;
+	}
+</style>
+
+
+
+
+<PageTitle Value="@GetPageTitle()" />
+@{
+	decimal totalinvested = 0;
+	decimal totalcurrent = 0;
+	decimal totalprofit = 0;
+	int totalnontraders = 0;
+	decimal totalnontraderamount = 0;
+	decimal pricediff = 0;
+	string headerstyle = "text-warning font-weight-bold small header text-center  sort-link";
+	string headerleftstyle = "text-warning font-weight-bold small header text-left  sort-link";
+	string cellstyle = "p-0 small text-center text-light";
+	string celleftstyle = "p-0 small text-left text-light";
+	string summary = "text-light font-weight-bold";
+	string sum_dang = "text-danger font-weight-bold";
+	string sum_succ = "text-success font-weight-bold";
+	int i = 1;
+}
+
+
+@if (AllPlayer.Count == 0)
+{
+	<Loader></Loader>
+}
+else
+{
+	@foreach (var pl in AllPlayer)
+	{
+		if (!string.IsNullOrEmpty(pl.Pair))
+		{
+			totalcurrent += Convert.ToDecimal(pl.TotalCurrentValue);
+			totalinvested += Convert.ToDecimal(pl.TotalBuyCost);
+		}
+		else
+		{
+			totalcurrent += Convert.ToDecimal(pl.AvailableAmountToBuy);
+			totalinvested += Convert.ToDecimal(pl.AvailableAmountToBuy);
+			totalnontraders++;
+			totalnontraderamount += Convert.ToDecimal(pl.AvailableAmountToBuy);
+		}
+	}
+
+	totalprofit = totalcurrent - totalinvested;
+
+	TotalProfit = totalprofit;
+
+	<div class="row p-0 m-0">
+		<div class="col-md-2 p-0 m-0">
+			<h6>
+				<span class=@summary>Invested:</span>
+				<span class=@sum_succ>  @Math.Round(totalinvested,0)</span>
+			</h6>
+		</div>
+		<div class="col-md-2 p-0 m-0">
+			@if (totalcurrent < totalinvested)
+			{
+				<h6><span class=@summary>Current:</span> <span class=@sum_dang>@Math.Round(totalcurrent,0)</span></h6>
+			}
+			else
+			{
+				<h6><span class=@summary>Current:</span><span class=@sum_succ>  @Math.Round(totalcurrent,0)</span></h6>
+			}
+		</div>
+		<div class="col-md-2 p-0 m-0">
+			@if (totalprofit < 0)
+			{
+				<h6><span class=@summary>Profit:  </span><span class=@sum_dang> @Math.Round(totalprofit,0)</span></h6>
+			}
+			else
+			{
+				<h6><span class=@summary>Profit:  </span><span class=@sum_succ>  @Math.Round(totalprofit,0)</span></h6>
+			}
+		</div>
+		<div class="col-md-2 p-0 m-0">
+			<h6><span class=@summary>Non Players:  </span><span class=@sum_succ>  @totalnontraders</span></h6>
+		</div>
+		<div class="col-md-4 p-0 m-0">
+			<h6><span class=@summary> Idle Amount:  </span><span class=@sum_succ> @Math.Round(@totalnontraderamount,0)</span></h6>
+		</div>
+	</div>
+
+
+	<div class="wrapper">
+		<table class="table table-bordered-sm table-compact table-sm">
+			<thead class="header bg-dark thead-dark">
+				<tr>
+					<th class=@headerleftstyle>#</th>
+					<th class=@headerleftstyle @onclick='(()=>SortTable("Pair"))'>Pair <span class="@(SetSortIcon("Pair"))"></span></th>
+					<th class=@headerstyle>Sell</th>
+					<th class=@headerstyle>Signal</th>
+						<th class=@headerstyle>Buy</th>
+					<th class=@headerstyle>NoBuy</th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Name"))'>Name <span class=" @(SetSortIcon("Name"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("SellBelowPerc"))'>Sell Below <span class=" @(SetSortIcon("SellBelowPerc"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("SellAbovePerc"))'>Sell Above <span class=" @(SetSortIcon("SellAbovePerc"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("BuyTime"))'>Buy Time <span class=" @(SetSortIcon("BuyTime"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Quantity"))'>Qty <span class=" @(SetSortIcon("Quantity"))"></span></th>
+					<th class=@headerstyle>Profit Loss Changes</th>
+					<th class=@headerstyle>Profit Loss %</th>
+					<th class=@headerstyle @onclick='(()=>SortTable("ProfitLossAmt"))'>Profit Amount <span class=" @(SetSortIcon("ProfitLossAmt"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("TotalBuyCost"))'>Buy Cost <span class=" @(SetSortIcon("TotalBuyCost"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("TotalCurrentValue"))'>Current Value <span class=" @(SetSortIcon("TotalCurrentValue"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("BuyCoinPrice"))'>Cn Buy Pr <span class=" @(SetSortIcon("BuyCoinPrice"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("CurrentCoinPrice"))'>Cn Cr Value <span class=" @(SetSortIcon("CurrentCoinPrice"))"></span></th>
+					<th class=@headerstyle>Today Profit Loss %</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				@foreach (var player in AllPlayer)
+				{
+					if (player.BuyOrSell.Length > 0)
+					{
+						string link = "https://www.binance.com/en/trade/" + @player.Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
+						string url = "ViewSignal/" + @player.Pair;
+						pricediff = @Math.Round(Convert.ToDecimal(((player.TotalCurrentValue - player.TotalBuyCost) / player.TotalBuyCost) * 100), 2);
+						<tr>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+								@i
+							</td>
+
+							<td class="@celleftstyle">
+								<a href=@link target="_blank" class="font-weight-bold text-warning"> @player.Pair.Replace("USDT","")</a>
+							</td>
+							<td class="@cellstyle"><button class="btn btn-link btn-sm pt-0 pb-0 m-0" @onclick="(()=>Sell(player.Name))"><span class="text-warning oi oi-circle-check  pt-0 pb-0 m-0"></span></button> </td>
+							<td class="@cellstyle"><a href=@url target="_blank"><span class="text-info oi oi-dashboard"></span></a></td>
+							<td class="@cellstyle"><button class="btn btn-link btn-sm p-0" @onclick="(()=>MarkToBuy(player.Pair))"><span class="text-successs oi oi-circle-check"></span></button> </td>
+						<td class="@cellstyle"><button class="btn btn-link btn-sm p-0" @onclick="(()=>CancelBuy(player.Pair))"><span class="text-danger oi oi-circle-x"></span></button> </td>
+						
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"><span class="font-weight-bold text-success">@player.Name</span></td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.SellBelowPerc),2).ToString().TrimEnd('0', '.')</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@player.SellAbovePerc.ToString().TrimEnd('0', '.')</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Convert.ToDateTime(player.BuyTime).ToString("dd-MMM hh:mm")</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@player.Quantity.ToString().TrimEnd('0', '.')</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+								@if (player.ProfitLossChanges.Length > 20)
+								{
+									@player.ProfitLossChanges.Substring(player.ProfitLossChanges.Length - 20)
+									;
+								}
+								else
+								{
+									@player.ProfitLossChanges
+									;
+								}
+							</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+								@pricediff
+							</td>
+
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+								@if (player.ProfitLossAmt < 0)
+								{
+									<span class="text-danger font-weight-bolder">@Math.Round(player.ProfitLossAmt,2)</span>
+								}
+								else
+								{
+									<span class="text-success font-weight-bolder">@Math.Round(player.ProfitLossAmt,2)</span>
+								}
+							</td>
+
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.TotalBuyCost),2)</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.TotalCurrentValue),2)</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.BuyCoinPrice),7).ToString().TrimEnd('0', '.')</td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.CurrentCoinPrice),7).ToString().TrimEnd('0', '.')</td>
+
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+								@if (player.TodayProfitLoss < 0)
+								{
+									<span class="text-danger font-weight-bolder">@Math.Round(Convert.ToDecimal(player.TodayProfitLoss),2).ToString().TrimEnd('0', '.')</span>
+								}
+								else
+								{
+									<span class="text-success font-weight-bolder">@Math.Round(Convert.ToDecimal(player.TodayProfitLoss),2).ToString().TrimEnd('0', '.')</span>
+								}
+							</td>
+						</tr>
+						i++;
+					}
+				}
+
+				@{
+					i = 1;
+				}
+
+					@foreach (var player in AllPlayer)
+					{
+					if (player.BuyOrSell.Length == 0)
+					{
+
+					<tr>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+					@i
+					</td>
+
+					<td class="@celleftstyle">
+
+					</td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+						<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+							<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"><span class="font-weight-bold text-success">@player.Name</span></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@Math.Round(Convert.ToDecimal(player.SellBelowPerc),2).ToString().TrimEnd('0', '.')</td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">@player.SellAbovePerc.ToString().TrimEnd('0', '.')</td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))"></td>
+					<td class="@cellstyle" @onclick="(()=>EditPlayer(player.Id))">
+
+					</td>
+					</tr>
+					i++;
+					}
+					}
+			</tbody>
+		</table>
+	</div>
+}
+
+<EditPlayer player="PlayertoEdit">
+</EditPlayer>
+
+@code {
+
+	public Player PlayertoEdit { get; set; } = new Player();
+	public List<Player> AllPlayer = new List<Player>();
+
+	private bool IsSortedAscending;
+	private string CurrentSortColumn;
+
+	public decimal TotalProfit { get; set; }
+
+	private string GetPageTitle() => $"{Math.Round(TotalProfit, 0)} P/L";
+
+	private string SetSortIcon(string columnName)
+	{
+		if (CurrentSortColumn != columnName) return string.Empty;
+		if (IsSortedAscending) return "text-warning oi oi-sort-ascending";
+		else return "text-warning oi oi-sort-descending";
+	
+	}
+
+	private void SortTable(string columnName)
+	{
+		try
+		{
+			if (columnName != CurrentSortColumn)
+			{
+				AllPlayer = AllPlayer.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+				CurrentSortColumn = columnName;
+				IsSortedAscending = true;
+				
+			}
+			else
+			{
+				if (IsSortedAscending) AllPlayer = AllPlayer.OrderByDescending(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+				else AllPlayer = AllPlayer.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+				IsSortedAscending = !IsSortedAscending;
+			}
+		}
+		catch(Exception ex)
+		{
+			Console.WriteLine($"Sorted by {columnName}");
+			Console.WriteLine($"Exception {ex.Message}");
+		}
+
+	}
+
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		System.Timers.Timer t = new System.Timers.Timer();
+		t.Interval = 15000;
+		t.Elapsed += async (s, e) =>
+		{
+			AllPlayer = await PlayerService.GetPlayers();
+			await InvokeAsync(StateHasChanged);
+		};
+		t.Start();
+
+		AllPlayer = await PlayerService.GetPlayers();
+		PlayerService.OnChange += StateHasChanged;
+	}
+
+	public async Task Sell(string playername)
+	{
+		Console.WriteLine(playername);
+		var player = await PlayerService.SellPlayer(playername);
+		toastService.ShowInfo($"{playername} marked to sell");
+	}
+
+	void EditPlayer(int id)
+	{
+		PlayertoEdit = PlayerService.Players.Find(x => x.Id == id);
+	}
+
+		public async Task MarkToBuy(string pair)
+	{
+		var coin = await SignalService.MarkCoinToBuy(pair);
+		toastService.ShowInfo($"{pair.Replace("USDT","")} marked to buy");
+	}
+
+	public async Task CancelBuy(string pair)
+	{
+		var coin = await SignalService.CancelBuy(pair);
+		toastService.ShowError($"{pair.Replace("USDT","")} unmarked from buy","No buy");
+	}
+
+	public void Dispose()
+	{
+		PlayerService.OnChange -= StateHasChanged;
+	}
+}

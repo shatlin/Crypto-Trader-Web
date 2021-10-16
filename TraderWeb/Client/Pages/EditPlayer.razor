@@ -1,0 +1,219 @@
+﻿@inject IPlayerService PlayerService
+@inject IJSRuntime JSRuntime
+@inject IToastService toastService
+
+@if (string.IsNullOrEmpty(player.Name))
+{
+}
+else
+{
+	<EditForm Model="@player" OnSubmit="HandleSubmit">
+
+		<div class="row ">
+
+			<div class="col-4">
+				<div class="row">
+					<div class="col-md-1 mb-0 pl-1">
+						<InputCheckbox @bind-Value="player.isBuyAllowed" class="form-control mb-0 "></InputCheckbox>
+					</div>
+					<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+						<label class="small">Is Buying Allowed</label>
+					</div>
+				</div>
+
+
+
+				<div class=" row">
+					<div class="col-md-1 mb-0 pl-1">
+						<InputCheckbox @bind-Value="player.isSellAllowed" class="form-control"></InputCheckbox>
+					</div>
+					<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+						<label class="small">Is Selling Allowed</label>
+					</div>
+				</div>
+
+
+
+
+				<div class="row">
+					<div class="col-md-1 mb-0 pl-1">
+						<InputCheckbox @bind-Value="player.ForceSell" class="form-control"></InputCheckbox>
+					</div>
+					<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+						<label class="small">Force Sell Now?</label>
+					</div>
+
+				</div>
+
+
+
+				<div class="row">
+					<div class="col-md-1 mb-0 pl-1">
+						<InputCheckbox @bind-Value="player.isBuyOrderCompleted" class="form-control"></InputCheckbox>
+					</div>
+					<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+						<label class="small">Is Buy Order Completed</label>
+					</div>
+				</div>
+
+
+			</div>
+
+			<div class="col-4">
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Quantity</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.Quantity" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Total Buy Cost</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.TotalBuyCost" class="small float-left"></InputNumber>
+					</div>
+				</div>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small"> Total Sell Value</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.TotalSellAmount" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Buy Order Id</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.BuyOrderId" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small"> Buy Coin Price</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.BuyCoinPrice" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small"> Sell Coin Price</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.SellCoinPrice" class="small float-left"></InputNumber>
+					</div>
+				</div>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Buy Commision</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.BuyCommision" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small"> Sell Commision</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.SellCommision" class="small float-left"></InputNumber>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-4 ">
+
+				<div class="row">
+					<div class="col-7">
+						<label class="small">Sell When goes below Percentage</label>
+					</div>
+					<div class="col-5">
+						<InputNumber @bind-Value="player.SellBelowPerc" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+
+				<div class="row">
+					<div class="col-md-7 text-left">
+						<label class="small">Sell When goes above Percentage</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.SellAbovePerc" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+
+
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small"> Reps Before Cancelling Order</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.RepsTillCancelOrder" class="small float-left"></InputNumber>
+					</div>
+				</div>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Total Current Value</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.TotalCurrentValue" class="small float-left"></InputNumber>
+					</div>
+				</div>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Total Available Amount</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.AvailableAmountToBuy" class="small float-left"></InputNumber>
+					</div>
+				</div>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Buy Time</label>
+					</div>
+					<div class="col-md-5">
+						<InputDate @bind-Value="player.BuyTime" class="small float-left"></InputDate>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class=row>
+			<div class="col-md-12 text-left">
+				<button type="submit" class="btn btn-primary btn-sm p-0 pl-2 pr-2 m-1 small float-right"> Update @player.Name @player.Pair</button>
+			</div>
+
+		</div>
+	</EditForm>
+}
+
+@code {
+	[Parameter]
+	public Player player { get; set; } 
+
+	async void HandleSubmit()
+	{
+		//Console.WriteLine("Sumbit called");
+		//await JSRuntime.InvokeVoidAsync("console.log", player);
+		await PlayerService.UpdatePlayer(player, player.Id);
+		toastService.ShowSuccess($"{player.Name} updated successfully","Updated");
+	}
+
+
+}

@@ -1,0 +1,52 @@
+﻿@*<style>
+	.center {
+	position: fixed; /* or absolute */
+	top: 18%;
+	left: 35%;
+	}
+	</style>
+	@if(DateTime.Now.Minute %2==0)
+	{
+	<img src="loading.gif" class="center">
+	}
+	else
+	{
+	<img src="loading2.gif" class="center">
+
+	}*@
+
+<style>
+	.wrapper {
+		height: 800px;
+		overflow: auto;
+	}
+
+	.center {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		padding: 10px;
+	}
+
+</style>
+
+<h1 class="center">@Counter seconds elapsed</h1>
+
+
+@code {
+
+	public int Counter = 0;
+
+	protected override void OnInitialized()
+	{
+		System.Timers.Timer t = new System.Timers.Timer();
+		t.Interval = 1000;
+		t.Elapsed += async (s, e) =>
+		{
+			Counter++;
+			await InvokeAsync(StateHasChanged);
+		};
+		t.Start();
+	}
+}

@@ -1,0 +1,37 @@
+﻿@page "/SingleConfig/{id:int}"
+@inject IConfigService ConfigService
+
+<h1>Config</h1>
+
+@if(conf==null)
+{
+    <span> Loading Config ...</span>
+}
+else
+{
+<h3>@conf.Botname</h3>
+}
+
+
+@code {
+
+    public Config conf = null;
+
+    [Parameter]
+    public int id{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"This is my id {id} ");
+        try
+        {
+        conf = await ConfigService.GetSingleConfig(id);
+        }
+        catch(Exception ex)
+        {
+             Console.WriteLine($"This is my exception {ex.Message} ");
+        }
+
+        Console.WriteLine($"This is my botname {conf.Botname} ");
+    }
+}

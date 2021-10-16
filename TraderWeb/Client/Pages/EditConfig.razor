@@ -1,0 +1,422 @@
+﻿@inject IConfigService ConfigService
+@inject IJSRuntime JSRuntime
+
+<EditForm Model="@conf" OnSubmit="HandleSubmit">
+	
+		
+			<div class="row">
+				<div class=col-4>
+					<h5 class="pb-3"> Frequents</h5>
+
+					
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.IsBuyingAllowed" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Is Buying Allowed</label>
+							</div>
+						</div>
+					
+
+					
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.IsSellingAllowed" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Is Selling Allowed</label>
+							</div>
+						</div>
+				
+					
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.IsReducingSellAbvAllowed" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label"> Reduce Sell Above Hourly?</label>
+							</div>
+						</div>
+				
+					
+
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.UpdateCoins" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Update Coin List in next start?</label>
+							</div>
+
+						
+					</div>
+				</div>
+
+				<div class=col-4>
+					<h5 class="pb-3"> Logs - 1 </h5>
+
+				
+
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group pl-1 m-0 pb-0 pt-0">
+								<InputCheckbox @bind-Value="conf.ShowBuyLogs" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Show Buy Logs</label>
+							</div>
+
+						</div>
+				
+
+					
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.ShowNoBuyLogs" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Show No Buy Logs</label>
+							</div>
+						</div>
+				
+					
+						<div class="col-md-12 row">
+							<div class="col-md-1 form-group mb-0  pl-1">
+								<InputCheckbox @bind-Value="conf.ShowSellLogs" class="form-control small"></InputCheckbox>
+							</div>
+							<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+								<label class="control-label">Show Sell Logs</label>
+							</div>
+						</div>
+					
+
+
+					<div class="col-md-12 row">
+						<div class="col-md-1 form-group mb-0 pl-1">
+							<InputCheckbox @bind-Value="conf.ShouldSellWhenAllBotsAtLoss" class="form-control small"></InputCheckbox>
+						</div>
+						<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+							<label class="control-label">Should Sell All when All Bots Prices go down </label>
+						</div>
+					</div>
+
+				</div>
+
+				<div class=col-4>
+					<h5 class="pb-3"> Logs - 2 </h5>
+
+
+
+					<div class="col-md-12 row">
+						<div class="col-md-1 form-group mb-0  pl-1">
+							<InputCheckbox @bind-Value="conf.ShowNoSellLogs" class="form-control small"></InputCheckbox>
+						</div>
+						<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+							<label class="control-label">Show No Sell Logs</label>
+						</div>
+
+					</div>
+
+
+
+					<div class="col-md-12 row">
+						<div class="col-md-1 form-group mb-0  pl-1">
+							<InputCheckbox @bind-Value="conf.ShowScalpBuyLogs" class="form-control small"></InputCheckbox>
+						</div>
+						<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+							<label class="control-label">Show Scalp Buy Logs</label>
+						</div>
+					</div>
+
+
+
+					<div class="col-md-12 row">
+						<div class="col-md-1 form-group mb-0 pl-1">
+							<InputCheckbox @bind-Value="conf.ShowNoScalpBuyLogs" class="form-control small"></InputCheckbox>
+						</div>
+						<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+							<label class="control-label">Show No Scalp Buy Logs</label>
+						</div>
+					</div>
+
+
+
+					<div class="col-md-12 row">
+						<div class="col-md-1 form-group mb-0 pl-1">
+							<InputCheckbox @bind-Value="conf.CrashSell" class="form-control small"></InputCheckbox>
+						</div>
+						<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
+							<label class="control-label">Crash Sell? </label>
+						</div>
+					</div>
+
+
+
+				</div>
+			</div>
+
+
+
+			<div class="row">
+
+
+				<div class=col-4>
+					<h5 class="pb-3"> Numbers</h5>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Max Reps Before Cancelling Order</label>
+						</div>
+						<div class="col-md-5 pl-4">
+							<InputNumber @bind-Value="conf.MaxRepsBeforeCancelOrder" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4 text-left">
+							<label class="small">Day High Greater than to Sell </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.DayHighGreaterthanToSell" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Day High Less than to Sell </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.DayHighLessthanToSell" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Day Low Greater than to Buy </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.DayLowGreaterthanTobuy" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Day Low Less than to Buy </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.DayLowLessthanTobuy" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Reduce Sell Above By </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ReduceSellAboveBy" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Reduce Price Difference Percentage By </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ReducePriceDiffPercBy" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Sell When AllBots At Loss Below </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.SellWhenAllBotsAtLossBelow" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+
+				</div>
+
+
+				<div class=col-4>
+					<h5 class="pb-3"> Scalp Buys</h5>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when No of 5 min downs >= </label>
+						</div>
+						<div class="col-md-5 pl-4 small">
+							<InputNumber @bind-Value="conf.ScalpFiveMinDownMoreThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when No of 15 min downs >= </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpFifteenMinDownMoreThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when No of 30 min downs >= </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpThirtyMinDownMoreThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when No of 1 Hour downs >= </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpFourHourDownMoreThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when No of 4 Hour downs >= </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpFourHourDownMoreThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Minimum Allowed Trade Count</label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.MinAllowedTradeCount" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Trade Interval in seconds</label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.IntervalMinutes" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class=col-4>
+					<h5 class="pb-3"> Scalp Buy Percentages </h5>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when  5 min down % less than  </label>
+						</div>
+						<div class="col-md-5 pl-4 small">
+							<InputNumber @bind-Value="conf.ScalpFiveMinDiffLessThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when  15 min down % less than</label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpFifteenMinDiffLessThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when  30 min down % less than </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpThirtyMinDiffLessThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when  1 Hour down % less than  </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpOneHourDiffLessThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4  text-left">
+							<label class="small">Scalp Buy when  4 Hour down % less than </label>
+						</div>
+						<div class="col-md-5 pl-4 ">
+							<InputNumber @bind-Value="conf.ScalpFourHourDiffLessThan" class="form-control small"></InputNumber>
+						</div>
+					</div>
+
+					<div class=row>
+						<div class="col-md-7 pl-4 text-left">
+							<label class="small">Default Sell Above Percentage</label>
+						</div>
+						<div class="col-md-5 pl-4">
+							<InputNumber class="form-control small" @bind-Value="conf.DefaultSellAbovePerc"></InputNumber>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+		
+
+
+
+		<div class="row">
+			<div class=col-12>
+				<button type="submit" class="btn btn-primary float-right m-4 p-2"> Submit </button>
+			</div>
+		</div>
+	
+
+
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public Config conf { get; set; } = new Config();
+
+	async void HandleSubmit()
+	{
+		Console.WriteLine("Sumbit called");
+		await JSRuntime.InvokeVoidAsync("console.log", conf);
+		await ConfigService.UpdateConfig(conf, conf.id);
+	}
+
+
+}

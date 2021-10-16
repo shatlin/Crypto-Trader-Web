@@ -1,0 +1,86 @@
+﻿@page "/ViewBTC/{pair}"
+@inject ISignalService SignalService
+@inject IJSRuntime JSRuntime
+@*<PageTitle Value="@GetPageTitle()" />*@
+
+<EditForm Model="@signalCandle">
+
+	@{
+		if (signalCandle.Count > 0)
+		{
+			int i = 1;
+			var onemins = signalCandle.Where(x => x.CandleType == "1min").OrderByDescending(x => x.CloseTime).Take(20);
+			var onemindiff = ((onemins.First().ClosePrice - onemins.Last().ClosePrice) / (onemins.Last().ClosePrice)) * 100;
+
+			string link = string.Empty;
+				link = "https://www.binance.com/en/trade/" + @signalCandle[0].Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
+
+			<div class="row">
+				<div class=col-12>
+					<h6>
+						<a href=@link target="_blank" class="badge badge-primary  m-1 p-1"> @signalCandle[0].Pair.Replace("USDT","")</a>
+						<span class="badge badge-warning">One Mins - last 10 mins</span>
+						&nbsp;
+						@if (onemindiff <= 0)
+						{
+							<span class="badge badge-danger text-light">@Math.Round(onemindiff,3)</span>
+						}
+						else
+						{
+							<span class="badge badge-success text-light">@Math.Round(onemindiff,3)</span>
+						}
+					</h6>
+					<table class="table table-borderless">
+						@{
+							i = 1;
+						}
+
+						@foreach (var item in onemins)
+						{
+							<tr class="p-0 m-0 text-light">
+
+
+								@if (@item.UpOrDown == "up")
+								{
+									<td class=" p-0 m-0 text-success font-size-big font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-success font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0  font-weight-bold"><span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
+								}
+								else
+								{
+									<td class=" p-0 m-0 text-danger  font-weight-bold">@i</td>
+									<td class=" p-0 m-0 text-danger  font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
+									<td class=" p-0 m-0 text-danger  font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
+									<td class=" p-0 m-0  font-weight-bold"> <span class="badge badge-pill badge-danger">@item.UpOrDown</span> </td>
+								}
+							</tr>
+							i++;
+						}
+					</table>
+				</div>
+			</div>
+
+		}
+	}
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public List<SignalCandle> signalCandle { get; set; } = new List<SignalCandle>();
+	[Parameter]
+	public string pair { get; set; }
+
+	private string GetPageTitle() => string.IsNullOrEmpty(pair) ? "View Signals" : $"View {pair.Replace("USDT", "")}";
+
+	  protected override async Task OnInitializedAsync()
+    {
+		if(!string.IsNullOrEmpty(pair))
+		{
+			signalCandle=await SignalService.GetSignals(pair);
+		}
+		
+    }
+
+}

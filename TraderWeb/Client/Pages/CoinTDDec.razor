@@ -1,0 +1,13 @@
+﻿@if (value<0)
+{
+	<td class="font-weight-bold  text-light"><span class="badge badge-danger">@Math.Round(value,3)</span></td>
+}
+else
+{
+	<td class="font-weight-bold  text-light"><span class="badge badge-success">@Math.Round(value,3)</span></td>
+}
+
+@code {
+	[Parameter]
+	public decimal value { get; set; } 
+}
