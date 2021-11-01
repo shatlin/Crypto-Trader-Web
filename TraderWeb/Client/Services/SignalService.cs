@@ -33,21 +33,21 @@ namespace TraderWeb.Client.Services
             return sigs;
         }
 
-        public async Task<List<CoinPrice>> GetCoinPrices()
+        public async Task<List<MyCoins>> GetCoinPrices()
         {
-            var coinprices = await _httpClient.GetFromJsonAsync<List<CoinPrice>>($"api/CoinPrice");
+            var coinprices = await _httpClient.GetFromJsonAsync<List<MyCoins>>($"api/CoinPrice");
             return coinprices;
         }
 
-        public async Task<List<CoinPrice>> GetBuyables()
+        public async Task<List<MyCoins>> GetBuyables()
         {
-            var coinprices = await _httpClient.GetFromJsonAsync<List<CoinPrice>>($"api/Buy/GetBuyDecisions");
+            var coinprices = await _httpClient.GetFromJsonAsync<List<MyCoins>>($"api/Buy/GetBuyDecisions");
             return coinprices;
         }
 
-        public async Task<List<CoinPrice>> GetSurgers()
+        public async Task<List<MyCoins>> GetSurgers()
         {
-            var coinprices = await _httpClient.GetFromJsonAsync<List<CoinPrice>>($"api/Buy/Surgers");
+            var coinprices = await _httpClient.GetFromJsonAsync<List<MyCoins>>($"api/Buy/Surgers");
             return coinprices;
         }
 
@@ -71,5 +71,20 @@ namespace TraderWeb.Client.Services
             return mycoin;
         }
 
+        public async Task<MyCoins> IncludeForTrading(string pair)
+        {
+            var result = await _httpClient.PutAsJsonAsync<string>($"api/Buy/IncludeForTrading/{pair}", pair);
+            var mycoin = await result.Content.ReadFromJsonAsync<MyCoins>();
+            return mycoin;
+        }
+
+        public async Task<MyCoins> ExcludeFromTrading(string pair)
+        {
+            var result = await _httpClient.PutAsJsonAsync<string>($"api/Buy/ExcludeFromTrading/{pair}", pair);
+            var mycoin = await result.Content.ReadFromJsonAsync<MyCoins>();
+            return mycoin;
+        }
+
+      
     }
 }

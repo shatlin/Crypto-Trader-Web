@@ -1,7 +1,7 @@
 ﻿@page "/ViewSignal/{pair}"
 @inject ISignalService SignalService
 @inject IJSRuntime JSRuntime
-@*<PageTitle Value="@GetPageTitle()" />*@
+<PageTitle Value="Signal" />
 
 <EditForm Model="@signalCandle">
 
@@ -17,13 +17,46 @@
 			var fourhours = signalCandle.Where(x => x.CandleType == "4hour").OrderByDescending(x => x.CloseTime);
 			var days = signalCandle.Where(x => x.CandleType == "day").OrderByDescending(x => x.CloseTime).Take(7);
 
-			var onemindiff = ((onemins.First().ClosePrice - onemins.Last().ClosePrice) / (onemins.Last().ClosePrice)) * 100;
-			var fivemindiff = ((fivemins.First().ClosePrice - fivemins.Last().ClosePrice) / (fivemins.Last().ClosePrice)) * 100;
-			var fifteenmindiff = ((fifteenmins.First().ClosePrice - fifteenmins.Last().ClosePrice) / (fifteenmins.Last().ClosePrice)) * 100;
-			var thirtymindiff = ((thirtymins.First().ClosePrice - thirtymins.Last().ClosePrice) / (thirtymins.Last().ClosePrice)) * 100;
-			var onehourdiff = ((onehours.First().ClosePrice - onehours.Last().ClosePrice) / (onehours.Last().ClosePrice)) * 100;
-			var fourhourdiff = ((fourhours.First().ClosePrice - fourhours.Last().ClosePrice) / (fourhours.Last().ClosePrice)) * 100;
-			var daydiff = ((days.First().ClosePrice - days.Last().ClosePrice) / (days.Last().ClosePrice)) * 100;
+			decimal onemindiff = 0;
+			decimal fivemindiff = 0;
+			decimal fifteenmindiff= 0;
+			decimal thirtymindiff= 0;
+			decimal onehourdiff= 0;
+			decimal fourhourdiff= 0;
+			decimal daydiff= 0;
+
+			if(onemins.Any())
+			{
+				onemindiff= ((onemins.First().ClosePrice - onemins.Last().ClosePrice) / (onemins.Last().ClosePrice)) * 100;
+			}
+			if(fivemins.Any())
+			{
+				var fivemins2 = signalCandle.Where(x => x.CandleType == "5min").OrderByDescending(x => x.CloseTime);
+				fivemindiff = ((onemins.First().ClosePrice - fivemins2.Last().ClosePrice) / (fivemins2.Last().ClosePrice)) * 100;
+			}
+			if(fifteenmins.Any())
+			{
+				fifteenmindiff = ((onemins.First().ClosePrice - fifteenmins.Last().ClosePrice) / (fifteenmins.Last().ClosePrice)) * 100;
+			}
+			if(thirtymins.Any())
+			{
+					thirtymindiff = ((onemins.First().ClosePrice - thirtymins.Last().ClosePrice) / (thirtymins.Last().ClosePrice)) * 100;
+			}
+			if(onehours.Any())
+			{
+				onehourdiff = ((onemins.First().ClosePrice - onehours.Last().ClosePrice) / (onehours.Last().ClosePrice)) * 100;
+			}
+
+			if(fourhours.Any())
+			{
+					fourhourdiff = ((onemins.First().ClosePrice - fourhours.Last().ClosePrice) / (fourhours.Last().ClosePrice)) * 100;
+			}
+
+			if(days.Any())
+			{
+				daydiff = ((onemins.First().ClosePrice - days.Last().ClosePrice) / (days.Last().ClosePrice)) * 100;
+			}
+
 
 			string link = string.Empty;
 				link = "https://www.binance.com/en/trade/" + @signalCandle[0].Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
@@ -146,7 +179,6 @@
 								{
 									<td class=" p-0 m-0  small text-success font-weight-bold">@i</td>
 									<td class=" p-0 m-0  small text-success font-weight-bold">@item.CloseTime.ToString("HH:mm")</td>
-
 									<td class=" p-0 m-0  small  text-success font-weight-bold">@item.ClosePrice.ToString().TrimEnd('0', '.')</td>
 									<td class=" p-0 m-0 small "> <span class="badge badge-pill badge-success">&nbsp;&nbsp;&nbsp;@item.UpOrDown&nbsp;&nbsp;</span> </td>
 								}

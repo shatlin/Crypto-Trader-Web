@@ -68,24 +68,24 @@ else
 					string theme = "small text-light";
 
 					<tr>
-						<td class="@theme">@coinprice.CoinRank</td>
+						<td class="@theme">@coinprice.Rank</td>
 						<td><a href=@link target="_blank" class="font-weight-bold small text-success"> @coinprice.Pair.Replace("USDT", "")</a></td>
 						<td><a href=@url target="_blank"><span class="text-info oi oi-dashboard"></span></a></td>
 						<td><button class="btn btn-link btn-sm p-0" @onclick="(()=>MarkToBuy(coinprice.Pair))"><span class="text-successs oi oi-circle-check"></span></button> </td>
 						<td><button class="btn btn-link btn-sm p-0" @onclick="(()=>CancelBuy(coinprice.Pair))"><span class="text-danger oi oi-circle-x"></span></button> </td>
-						<td class="@theme">@((MarkupString)coinprice.BuyDialog)</td>
+						<td class="@theme">@((MarkupString)coinprice.TradeSuggestion)</td>
 						
-						<td class="@theme">@Math.Round(coinprice.ClosePrice,3)</td>
-						<td class="@theme">@Math.Round(coinprice.DayMin,3)</td>
-						<td class="@theme">@Math.Round(coinprice.DayMax,3)</td>
-						<CoinTDDec value=coinprice.Five_OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.Ten_OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.Fifteen_OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.FifteenMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.OneHourPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.FourHourPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.DayPriceChange></CoinTDDec>
+						<td class="@theme">@Math.Round(coinprice.CurrentPrice,3)</td>
+						<td class="@theme">@Math.Round(coinprice.DayLowPrice,3)</td>
+						<td class="@theme">@Math.Round(coinprice.DayHighPrice,3)</td>
+						<CoinTDDec value=coinprice.FiveMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.TenMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FifteenMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.ThirtyMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FourtyFiveMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.TwentyFourHourChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FortyEightHourChange></CoinTDDec>
+						<CoinTDDec value=coinprice.OneWeekChange></CoinTDDec>
 						<td class="@theme">@Math.Round(coinprice.DayTradeCount,0)</td>
 					</tr>
 				}
@@ -98,7 +98,7 @@ else
 
 @code {
 
-	public List<CoinPrice> CoinPrices { get; set; } = new List<CoinPrice>();
+	public List<MyCoins> CoinPrices { get; set; } = new List<MyCoins>();
 	private bool IsSortedAscending;
 	private string CurrentSortColumn;
 

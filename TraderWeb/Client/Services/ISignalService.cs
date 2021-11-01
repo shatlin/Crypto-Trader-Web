@@ -12,11 +12,13 @@ namespace TraderWeb.Client.Services
         List<string> Pairs { get; set; }
         Task<List<string>> GetPairs();
         Task<List<SignalCandle>> GetSignals(string pair);
-        Task<List<CoinPrice>> GetCoinPrices();
-        Task<List<CoinPrice>> GetBuyables();
-        Task<List<CoinPrice>> GetSurgers();
+        Task<List<MyCoins>> GetCoinPrices();
+        Task<List<MyCoins>> GetBuyables();
+        Task<List<MyCoins>> GetSurgers();
         Task<MyCoins> MarkCoinToBuy(string pair);
         Task<MyCoins> CancelBuy(string pair);
+        Task<MyCoins> IncludeForTrading(string pair);
+        Task<MyCoins> ExcludeFromTrading(string pair);
         Task<GlobalSignal> GetGlobalSignal();
 
     }

@@ -34,9 +34,9 @@ namespace TraderWeb.Server.Controllers
             {
                 if (player.IsTrading)
                 {
-                    var signal = await _db.SignalCandle.Where(x => x.Pair == player.Pair && x.CandleType == "1hour").AsNoTracking().OrderByDescending(x => x.CloseTime).ToListAsync();
-                    player.TodayProfitLoss = ((signal.First().ClosePrice - signal.Last().ClosePrice) / signal.Last().ClosePrice) * 100;
-
+                    //var signal = await _db.SignalCandle.Where(x => x.Pair == player.Pair && x.CandleType == "1hour").AsNoTracking().OrderByDescending(x => x.CloseTime).ToListAsync();
+                    //player.TodayProfitLoss = ((signal.First().ClosePrice - signal.Last().ClosePrice) / signal.Last().ClosePrice) * 100;
+                    player.TodayProfitLoss =0;
                 }
             }
 
@@ -85,7 +85,9 @@ namespace TraderWeb.Server.Controllers
                 dbPlayer.isBuyAllowed = Player.isBuyAllowed;
                 dbPlayer.RepsTillCancelOrder = Player.RepsTillCancelOrder;
                 dbPlayer.ForceSell = Player.ForceSell;
-
+                dbPlayer.Pair=Player.Pair;
+                dbPlayer.BuyAtPrice = Player.BuyAtPrice;
+                dbPlayer.SellAtPrice = Player.SellAtPrice;
                 dbPlayer.isBuyOrderCompleted = Player.isBuyOrderCompleted;
                 dbPlayer.Quantity = Player.Quantity;
                 dbPlayer.TotalBuyCost = Player.TotalBuyCost;

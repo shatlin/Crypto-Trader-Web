@@ -24,7 +24,7 @@ namespace TraderWeb.Server.Controllers
             _logger = logger;
             _db = db;
         }
-        public List<MyCoins> allcoins=new List<MyCoins>();
+        public List<MyCoins> allcoins = new List<MyCoins>();
         private async Task<List<CoinPrice>> AllCoinPrice()
         {
 
@@ -69,7 +69,7 @@ namespace TraderWeb.Server.Controllers
                     var isOneOnUpTrend = Ten_OneMin.First().ClosePrice >= Ten_OneMin.Max(x => x.ClosePrice);
 
                     coinprice.Pair = Ten_OneMin.First().Pair;
-                    coinprice.CoinRank=coin.Rank;
+                    coinprice.CoinRank = coin.Rank;
                     coinprice.ClosePrice = Ten_OneMin.First().ClosePrice;
                     coinprice.OneMinPriceChange = ((AllOneMin.First().ClosePrice - AllOneMin.Last().ClosePrice) / AllOneMin.Last().ClosePrice) * 100;
 
@@ -94,7 +94,7 @@ namespace TraderWeb.Server.Controllers
 
                     var OneHour = allSignals.Where(x => x.Pair == coin.Pair && x.CandleType == "1hour");
                     var FourOneHour = OneHour.Take(4);
-                    bool isHourOnUpTrend=false;
+                    bool isHourOnUpTrend = false;
                     if (OneHour.Any())
                     {
                         coinprice.OneHourPriceChange = ((OneHour.First().ClosePrice - OneHour.Last().ClosePrice) / OneHour.Last().ClosePrice) * 100;
@@ -104,12 +104,12 @@ namespace TraderWeb.Server.Controllers
                     else
                     {
                         coinprice.OneHourPriceChange = 0;
-                        coinprice.IsOneHourOnDownTrend =true;
+                        coinprice.IsOneHourOnDownTrend = true;
                     }
 
                     var FourHour = allSignals.Where(x => x.Pair == coin.Pair && x.CandleType == "4hour");
 
-                   
+
                     if (FourHour.Any())
                     {
                         coinprice.FourHourPriceChange = ((FourHour.First().ClosePrice - FourHour.Last().ClosePrice) / FourHour.Last().ClosePrice) * 100;
@@ -124,7 +124,7 @@ namespace TraderWeb.Server.Controllers
 
                     var OneDay = allSignals.Where(x => x.Pair == coin.Pair && x.CandleType == "day").Take(7);
 
-                  
+
                     if (OneDay.Any())
                     {
                         coinprice.DayPriceChange = ((OneDay.First().ClosePrice - OneDay.Last().ClosePrice) / OneDay.Last().ClosePrice) * 100;
@@ -145,7 +145,7 @@ namespace TraderWeb.Server.Controllers
 
                     coinprice.SuperHigh = isOneOnUpTrend && isFiveOnUpTrend && isFifteenOnUpTrend && isThirtyOnUpTrend && isHourOnUpTrend;
 
-                    coinprice.DayTradeCount= coin.DayTradeCount;
+                    coinprice.DayTradeCount = coin.DayTradeCount;
                     coinprice.DayVloume = coin.DayVolume;
                     //coinprice.PriceChangeNumber =
                     //    coinprice.DayPriceChange +
@@ -181,10 +181,10 @@ namespace TraderWeb.Server.Controllers
                 }
                 catch
                 {
-                  
+
                 }
             }
-       
+
             return coinPrices;
         }
 
@@ -195,15 +195,23 @@ namespace TraderWeb.Server.Controllers
         public async Task<IActionResult> MarkToBuy(string pair)
         {
             MyCoins myCoin = null;
+            Player player = null;
             if (!string.IsNullOrEmpty(pair))
             {
                 myCoin = await _db.MyCoins.FirstOrDefaultAsync(x => x.Pair == pair);
-                if (myCoin != null)
+                player = await _db.Player.FirstOrDefaultAsync(x => x.Pair == null && x.IsTrading == false);
+                if (player != null)
                 {
-                    myCoin.ForceBuy = true;
-                    _db.Update(myCoin);
-                    await _db.SaveChangesAsync();
+                    player.isSellAllowed = false;
+                    player.Pair = pair;
+                    player.BuyAtPrice = myCoin.CurrentPrice+ (myCoin.CurrentPrice*5/100);
+                    if (player.BuyAtPrice != null && player.BuyAtPrice.Value > 0)
+                    {
+                        _db.Update(player);
+                        await _db.SaveChangesAsync();
+                    }
                 }
+
             }
             return Ok(myCoin);
         }
@@ -223,29 +231,89 @@ namespace TraderWeb.Server.Controllers
                     await _db.SaveChangesAsync();
                 }
             }
+
             return Ok(myCoin);
         }
+
+
+        //  [Route("api/buy/MarkToBuy/{pair}")]
+        [HttpPut]
+        [Route("[action]/{pair}")]
+        public async Task<IActionResult> IncludeForTrading(string pair)
+        {
+            MyCoins myCoin = null;
+            if (!string.IsNullOrEmpty(pair))
+            {
+                myCoin = await _db.MyCoins.FirstOrDefaultAsync(x => x.Pair == pair);
+                if (myCoin != null)
+                {
+                    myCoin.IsIncludedForTrading = true;
+                    _db.Update(myCoin);
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return Ok(myCoin);
+        }
+
+        [HttpPut]
+        [Route("[action]/{pair}")]
+        public async Task<IActionResult> ExcludeFromTrading(string pair)
+        {
+            MyCoins myCoin = null;
+            if (!string.IsNullOrEmpty(pair))
+            {
+                myCoin = await _db.MyCoins.FirstOrDefaultAsync(x => x.Pair == pair);
+                if (myCoin != null)
+                {
+                    myCoin.IsIncludedForTrading = false;
+                    _db.Update(myCoin);
+                    await _db.SaveChangesAsync();
+                }
+            }
+
+            return Ok(myCoin);
+        }
+
 
         [HttpGet]
         [Route("[action]")]
         public async Task<IActionResult> GetBuyDecisions()
         {
-            var res= await AllCoinPrice();
-            return Ok(res.OrderByDescending(x => x.DayTradeCount).ToList());
+            //    var playingpairs=await _db.Player.Where(x=>x.IsTrading==true).Select(x=>x.Pair).Distinct().ToListAsync();
+            var res = await _db.MyCoins.OrderByDescending(x => x.DayPriceDiff).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
+            return Ok(res);
         }
 
         [HttpGet]
         [Route("[action]")]
         public async Task<IActionResult> Surgers()
         {
-            var res = await AllCoinPrice();
-            res=res.Where(
-                x=> x.ClimbingFast==true 
-                ||x.ClimbedHigh==true
-                ||x.SuperHigh==true
-                ||(x.Five_OneMinPriceChange>0.2M && x.Ten_OneMinPriceChange > 0.3M && x.Fifteen_OneMinPriceChange>0.3M)
-                ).OrderByDescending(x=>x.DayTradeCount).ToList();
-            return Ok(res);
+
+            var config = await _db.Config.FirstOrDefaultAsync();
+            var allowedTradeCount = config.MinAllowedTradeCount;
+
+            var playingpairs = await _db.Player.Where(x => x.IsTrading == true).Select(x => x.Pair).Distinct().ToListAsync();
+
+            //var recentSells = await _db.PlayerTrades.Where(x => x.BuyOrSell != "Buy").OrderByDescending(x => x.Id).Take(15).Select(x => x.Pair).Distinct().ToListAsync();
+
+            var goingupCoins = await _db.MyCoins.Where(x => x.FiveMinChange >= 1M && x.DayTradeCount > allowedTradeCount && !playingpairs.Contains(x.Pair))
+                 .OrderByDescending(x => x.FiveMinChange).ToListAsync(); //&& !recentSells.Contains(x.Pair)
+
+            //var goingupCoins = await _db.MyCoins.Where(x => x.TwentyFourHourChange >= 5M && x.DayTradeCount>allowedTradeCount && !playingpairs.Contains(x.Pair) && !recentSells.Contains(x.Pair))
+            //       .OrderByDescending(x => x.TwentyFourHourChange).ToListAsync();
+
+            //var freeplayers = await _db.Player.Where(x => x.IsTrading == false).ToListAsync();
+            //var freeplayercount = freeplayers.Count();
+
+            //foreach (var coin in goingupCoins.Take(freeplayercount))
+            //{
+            //    coin.ForceBuy = true;
+            //    _db.Update(coin);
+            //}
+
+            //  await _db.SaveChangesAsync();
+
+            return Ok(goingupCoins);
         }
 
     }

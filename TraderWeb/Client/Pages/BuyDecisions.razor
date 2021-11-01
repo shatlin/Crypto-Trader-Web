@@ -14,24 +14,23 @@
 		overflow: auto;
 	}
 
-.center {
- position: absolute;
-left: 50%;
-top: 50%;
-transform: translate(-50%, -50%);
-padding: 10px;
-}
-
+	.center {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		padding: 10px;
+	}
 
 </style>
 
 @{
-	string headerstyle = "text-warning font-weight-bold small header sort-link";
-	
+	string headerstyle = "text-warning font-weight-bold  header sort-link";
+	int i=0;
 }
 @if (CoinPrices.Count == 0)
 {
-<Loader></Loader>
+	<Loader></Loader>
 }
 else
 {
@@ -39,26 +38,33 @@ else
 		<table class="table table-bordered-sm table-compact table-sm">
 			<thead class="header bg-dark thead-dark">
 				<tr>
-						<th class=@headerstyle @onclick='(()=>SortTable("CoinRank"))'>Rank<span class="@(SetSortIcon("CoinRank"))"></span></th>
+					<th class=@headerstyle >#</th>
+					<th class=@headerstyle @onclick='(()=>SortTable("Rank"))'>Rank<span class="@(SetSortIcon("Rank"))"></span></th>
 					<th class=@headerstyle @onclick='(()=>SortTable("Pair"))'>Pair<span class="@(SetSortIcon("Pair"))"></span></th>
 					<th class=@headerstyle>Signal</th>
 					<th class=@headerstyle>Buy</th>
 					<th class=@headerstyle>NoBuy</th>
-					<th class=@headerstyle @onclick='(()=>SortTable("BuyDialog"))'>Dialog<span class="@(SetSortIcon("BuyDialog"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("ClimbingFast"))'>Climbing?<span class="@(SetSortIcon("ClimbingFast"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("ClimbedHigh"))'>Climbed High?<span class="@(SetSortIcon("ClimbedHigh"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("SuperHigh"))'>Super High?<span class="@(SetSortIcon("SuperHigh"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("IsIncludedForTrading"))'>Is Trading? <span class="@(SetSortIcon("IsIncludedForTrading"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("ForceBuy"))'>MarkedToBuy <span class="@(SetSortIcon("ForceBuy"))"></span></th>
+					@*<th class=@headerstyle @onclick='(()=>SortTable("TradeSuggestion"))'>Dialog<span class="@(SetSortIcon("TradeSuggestion"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("ClimbingFast"))'>Climbing?<span class="@(SetSortIcon("ClimbingFast"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("ClimbedHigh"))'>Climbed High?<span class="@(SetSortIcon("ClimbedHigh"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("SuperHigh"))'>Super High?<span class="@(SetSortIcon("SuperHigh"))"></span></th>*@
 					<th class=@headerstyle>Cr Pr</th>
 					<th class=@headerstyle>Day Low</th>
 					<th class=@headerstyle>Day High</th>
-					<th class=@headerstyle @onclick='(()=>SortTable("Five_OneMinPriceChange"))'>5 Min Ch<span class="@(SetSortIcon("Five_OneMinPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("Ten_OneMinPriceChange"))'>10 Min Ch<span class="@(SetSortIcon("Ten_OneMinPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("OneMinPriceChange"))'>30 Min Ch<span class="@(SetSortIcon("OneMinPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("FifteenMinPriceChange"))'>45 Min Ch<span class="@(SetSortIcon("FifteenMinPriceChange"))"></span> </th>
-					<th class=@headerstyle @onclick='(()=>SortTable("OneHourPriceChange"))'>24 Hr Ch <span class="@(SetSortIcon("OneHourPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("FourHourPriceChange"))'>48 Hr Ch <span class="@(SetSortIcon("OneHourPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("DayPriceChange"))'>7 Day Ch <span class="@(SetSortIcon("DayPriceChange"))"></span></th>
-					<th class=@headerstyle @onclick='(()=>SortTable("DayTradeCount"))'>Trade Count <span class="@(SetSortIcon("DayTradeCount"))"></span></th>
+					<th class=@headerstyle @onclick='(()=>SortTable("DayPriceDiff"))'>Change%<span class="@(SetSortIcon("DayPriceDiff"))"></span></th>
+					@*<th class=@headerstyle @onclick='(()=>SortTable("FiveMinChange"))'>5 Min<span class="@(SetSortIcon("FiveMinChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("TenMinChange"))'>10 Min<span class="@(SetSortIcon("TenMinChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("FifteenMinChange"))'>15 Min<span class="@(SetSortIcon("FifteenMinChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("ThirtyMinChange"))'>30 Min<span class="@(SetSortIcon("ThirtyMinChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("FourtyFiveMinChange"))'>45 Min<span class="@(SetSortIcon("FourtyFiveMinChange"))"></span> </th>
+						<th class=@headerstyle @onclick='(()=>SortTable("TwentyFourHourChange"))'>24 Hr<span class="@(SetSortIcon("TwentyFourHourChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("FortyEightHourChange"))'>48 Hr<span class="@(SetSortIcon("FortyEightHourChange"))"></span></th>
+						<th class=@headerstyle @onclick='(()=>SortTable("OneWeekChange"))'>7 Day<span class="@(SetSortIcon("OneWeekChange"))"></span></th>*@
+					<th class=@headerstyle @onclick='(()=>SortTable("DayTradeCount"))'>Trades <span class="@(SetSortIcon("DayTradeCount"))"></span></th>
+				
+					<th class=@headerstyle @onclick='(()=>SortTable("DayVolumeUSDT"))'>VolumeUSDT<span class="@(SetSortIcon("DayVolumeUSDT"))"></span></th>
 					
 				</tr>
 			</thead>
@@ -66,31 +72,67 @@ else
 
 				@foreach (var coinprice in CoinPrices)
 				{
+					i++;
 					string link = "https://www.binance.com/en/trade/" + @coinprice.Pair.Replace("USDT", "_USDT") + "?layout=pro&type=spot";
 					string url = "ViewSignal/" + @coinprice.Pair;
-					string theme = "p-0 small text-center text-light";
-					
+					string theme = "p-0 text-center text-light";
+
 					<tr>
-							<td class="@theme">@coinprice.CoinRank</td>
-						<td class="@theme"><a href=@link target="_blank" class="font-weight-bold small text-success"> @coinprice.Pair.Replace("USDT", "")</a></td>
+						<td class="text-left text-light small">@i</td>
+						<td class="text-left text-light small">@coinprice.Rank</td>
+						<td><a href=@link target="_blank" class="font-weight-bold small text-success text-left"> @coinprice.Pair.Replace("USDT", "")</a></td>
 						<td class="@theme"><a href=@url target="_blank"><span class="text-info oi oi-dashboard"></span></a></td>
 						<td class="@theme"><button class="btn btn-link btn-sm p-0" @onclick="(()=>MarkToBuy(coinprice.Pair))"><span class="text-successs oi oi-circle-check"></span></button> </td>
 						<td class="@theme"><button class="btn btn-link btn-sm p-0" @onclick="(()=>CancelBuy(coinprice.Pair))"><span class="text-danger oi oi-circle-x"></span></button> </td>
-						<td class="text-left text-light small">@((MarkupString)coinprice.BuyDialog)</td>
-						<CoinTDBool check=coinprice.ClimbingFast></CoinTDBool>
-						<CoinTDBool check=coinprice.ClimbedHigh></CoinTDBool>
-						<CoinTDBool check=coinprice.SuperHigh></CoinTDBool>
-						<td class="text-left text-light small">@Math.Round(coinprice.ClosePrice,3)</td>
-						<td class="text-left text-light small">@Math.Round(coinprice.DayMin,3)</td>
-						<td class="text-left text-light small">@Math.Round(coinprice.DayMax,3)</td>
-						<CoinTDDec value=coinprice.Five_OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.Ten_OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.OneMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.FifteenMinPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.OneHourPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.FourHourPriceChange></CoinTDDec>
-						<CoinTDDec value=coinprice.DayPriceChange></CoinTDDec>
+						<td class="@theme">
+							@{
+								if (coinprice.IsIncludedForTrading==true)
+								{
+									<button class="btn btn-link btn-sm p-0" @onclick="(()=>Exclude(coinprice.Pair))">
+										<span class="text-success">Exclude</span>
+									</button>
+
+								}
+								else
+								{
+									<button class="btn btn-link btn-sm p-0" @onclick="(()=>Include(coinprice.Pair))">
+										<span class="text-warning">Include</span>
+									</button>
+								}
+							}
+						</td>
+
+						<td class="@theme">
+							@{
+								if (coinprice.ForceBuy==true)
+								{
+									<span class="text-success">Yes</span>
+}
+								else
+								{
+										<span class="text-warning">No</span>
+								}
+							}
+						</td>
+						@*<td class="text-left text-light small">@((MarkupString)coinprice.TradeSuggestion)</td>
+							<CoinTDBool check=coinprice.ClimbingFast></CoinTDBool>
+							<CoinTDBool check=coinprice.ClimbedHigh></CoinTDBool>
+							<CoinTDBool check=coinprice.SuperHigh></CoinTDBool>*@
+						<td class="text-left text-light small">@Math.Round(coinprice.CurrentPrice,5)</td>
+						<td class="text-left text-light small">@Math.Round(coinprice.DayLowPrice,5)</td>
+						<td class="text-left text-light small">@Math.Round(coinprice.DayHighPrice,5)</td>
+						<td class="text-left text-light small">@Math.Round(coinprice.DayPriceDiff,3)</td>
+				@*		<CoinTDDec value=coinprice.FiveMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.TenMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FifteenMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.ThirtyMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FourtyFiveMinChange></CoinTDDec>
+						<CoinTDDec value=coinprice.TwentyFourHourChange></CoinTDDec>
+						<CoinTDDec value=coinprice.FortyEightHourChange></CoinTDDec>
+						<CoinTDDec value=coinprice.OneWeekChange></CoinTDDec>*@
 						<td class="text-left text-light small">@Math.Round(coinprice.DayTradeCount,0)</td>
+						<td class="text-left text-light small">@Math.Round(coinprice.DayVolumeUSDT,0)</td>
+						
 					</tr>
 				}
 			</tbody>
@@ -100,7 +142,7 @@ else
 
 @code {
 
-	public List<CoinPrice> CoinPrices { get; set; } = new List<CoinPrice>();
+	public List<MyCoins> CoinPrices { get; set; } = new List<MyCoins>();
 	private bool IsSortedAscending;
 	private string CurrentSortColumn;
 
@@ -131,15 +173,15 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		System.Timers.Timer t = new System.Timers.Timer();
-		t.Interval = 30000;
+		t.Interval = 60000;
 		t.Elapsed += async (s, e) =>
 		{
 			CoinPrices = await SignalService.GetBuyables();
-			
+
 			await InvokeAsync(StateHasChanged);
 		};
 		t.Start();
-	
+
 		CoinPrices = await SignalService.GetBuyables();
 	}
 
@@ -148,13 +190,26 @@ else
 	public async Task MarkToBuy(string pair)
 	{
 		var coin = await SignalService.MarkCoinToBuy(pair);
-		toastService.ShowInfo($"{pair.Replace("USDT","")} marked to buy");
+		toastService.ShowInfo($"{pair.Replace("USDT", "")} marked to buy");
 	}
 
 	public async Task CancelBuy(string pair)
 	{
 		var coin = await SignalService.CancelBuy(pair);
-		toastService.ShowError($"{pair.Replace("USDT","")} unmarked from buy","No buy");
+		toastService.ShowError($"{pair.Replace("USDT", "")} unmarked from buy", "No buy");
+	}
+
+	
+	public async Task Include(string pair)
+	{
+		var coin = await SignalService.IncludeForTrading(pair);
+		toastService.ShowInfo($"{pair.Replace("USDT", "")} included for trading","Coin Included");
+	}
+
+	public async Task Exclude(string pair)
+	{
+		var coin = await SignalService.ExcludeFromTrading(pair);
+		toastService.ShowError($"{pair.Replace("USDT", "")} excluded from trading", "Coin Excluded");
 	}
 
 }

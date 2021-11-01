@@ -1,15 +1,14 @@
-﻿
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TraderWeb.Shared;
 
 namespace TraderWeb.Server.Data
 {
-
-    public partial class PlayerConfiguration : IEntityTypeConfiguration<Player>
+   
+    public partial class PlayerHistConfiguration : IEntityTypeConfiguration<PlayerTrades>
     {
-        public void Configure(EntityTypeBuilder<Player> builder)
+        public void Configure(EntityTypeBuilder<PlayerTrades> builder)
         {
             builder.Property(e => e.BuyOrSell).IsRequired(false);
             builder.Property(e => e.ProfitLossChanges).IsRequired(false);
@@ -23,25 +22,20 @@ namespace TraderWeb.Server.Data
             builder.Property(e => e.Quantity).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.TotalBuyCost).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.TotalCurrentValue).IsRequired().HasColumnType("decimal(30, 12)");
-
+           
             builder.Property(e => e.AvailableAmountToBuy).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.BuyCommision).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.SellCoinPrice).IsRequired().HasColumnType("decimal(30, 12)");
-
+           
             builder.Property(e => e.SellCommision).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.TotalSellAmount).IsRequired().HasColumnType("decimal(30, 12)");
-
+           
             builder.Property(e => e.SellAbovePerc).IsRequired().HasColumnType("decimal(30, 12)");
-            builder.Property(e => e.HardSellPerc).IsRequired().HasColumnType("decimal(30, 12)");
-
             builder.Property(e => e.ProfitLossAmt).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.LastRoundProfitPerc).IsRequired().HasColumnType("decimal(30, 12)");
+            builder.Property(e => e.HardSellPerc).IsRequired().HasColumnType("decimal(30, 12)");
 
-            builder.Property(e => e.BuyAtPrice).IsRequired(false).HasColumnType("decimal(30, 12)");
-            builder.Property(e => e.SellAtPrice).IsRequired(false).HasColumnType("decimal(30, 12)");
         }
-
     }
 
 }
-

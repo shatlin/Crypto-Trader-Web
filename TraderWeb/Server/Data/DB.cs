@@ -22,6 +22,7 @@ namespace TraderWeb.Server.Data
     
         public DbSet<Config> Config { get; set; }
         public DbSet<Player> Player { get; set; }
+        public DbSet<PlayerTrades> PlayerTrades { get; set; }
         public DbSet<SignalCandle> SignalCandle { get; set; }
         public DbSet<MyCoins> MyCoins { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -38,6 +39,7 @@ namespace TraderWeb.Server.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ConfigConfiguration());
             modelBuilder.ApplyConfiguration(new PlayerConfiguration());
+            modelBuilder.ApplyConfiguration(new PlayerHistConfiguration());
             modelBuilder.ApplyConfiguration(new SignalCandleConfiguration());
             modelBuilder.ApplyConfiguration(new CoinConfiguration());
         }

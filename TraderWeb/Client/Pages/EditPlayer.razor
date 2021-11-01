@@ -45,17 +45,33 @@ else
 
 				</div>
 
-
-
-				<div class="row">
-					<div class="col-md-1 mb-0 pl-1">
-						<InputCheckbox @bind-Value="player.isBuyOrderCompleted" class="form-control"></InputCheckbox>
+				<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Pair</label>
 					</div>
-					<div class="col-md-11 pt-2 pl-0 ml-0 text-left">
-						<label class="small">Is Buy Order Completed</label>
+					<div class="col-md-5">
+						<InputText @bind-Value="player.Pair" class="small float-left"></InputText>
 					</div>
 				</div>
 
+					<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Buy At Price</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.BuyAtPrice" class="small float-left"></InputNumber>
+					</div>
+				</div>
+
+
+					<div class=row>
+					<div class="col-md-7 text-left">
+						<label class="small">Sell At Price</label>
+					</div>
+					<div class="col-md-5">
+						<InputNumber @bind-Value="player.SellAtPrice" class="small float-left"></InputNumber>
+					</div>
+				</div>
 
 			</div>
 
