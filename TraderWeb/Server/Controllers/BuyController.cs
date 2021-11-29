@@ -199,7 +199,7 @@ namespace TraderWeb.Server.Controllers
             if (!string.IsNullOrEmpty(pair))
             {
                 myCoin = await _db.MyCoins.FirstOrDefaultAsync(x => x.Pair == pair);
-                player = await _db.Player.FirstOrDefaultAsync(x => x.Pair == null && x.IsTrading == false);
+                player = await _db.Player.FirstOrDefaultAsync(x => (x.Pair == null || x.Pair.Length==0) && x.IsTrading == false);
                 if (player != null)
                 {
                     player.isSellAllowed = false;
@@ -280,7 +280,7 @@ namespace TraderWeb.Server.Controllers
         public async Task<IActionResult> GetBuyDecisions()
         {
             //    var playingpairs=await _db.Player.Where(x=>x.IsTrading==true).Select(x=>x.Pair).Distinct().ToListAsync();
-            var res = await _db.MyCoins.OrderByDescending(x => x.DayPriceDiff).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
+            var res = await _db.MyCoins.OrderByDescending(x => x.DayVolumeUSDT).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
             return Ok(res);
         }
 

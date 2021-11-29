@@ -14,5 +14,10 @@ namespace TraderWeb.Client.Services
         Task<List<Player>> UpdatePlayer(Player Player,int id);
         Task<Player> GetSinglePlayer(int id);
         Task<Player> SellPlayer(string playername);
+
+        Task<Player> CombinePlayers(string pair);
+        Task<Player> RemovePlayer(string playername);
+        Task<Player> AddPlayer(string emptyString);
+     
     }
 }

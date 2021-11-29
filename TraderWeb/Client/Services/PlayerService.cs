@@ -50,6 +50,26 @@ namespace TraderWeb.Client.Services
             return player;
         }
 
+        public async Task<Player> CombinePlayers(string pair)
+        {
+            var result = await _httpClient.PutAsJsonAsync<string>($"api/Player/CombinePlayers/{pair}", pair);
+            var player = await result.Content.ReadFromJsonAsync<Player>();
+            return player;
+        }
+
+        public async Task<Player> RemovePlayer(string playername)
+        {
+            var result = await _httpClient.PutAsJsonAsync<string>($"api/Player/RemovePlayer/{playername}", playername);
+            var player = await result.Content.ReadFromJsonAsync<Player>();
+            return player;
+        }
+
+        public async Task<Player> AddPlayer(string emtpyString)
+        {
+            var result = await _httpClient.PutAsJsonAsync<string>($"api/Player/AddPlayer/{emtpyString}", emtpyString);
+            var player = await result.Content.ReadFromJsonAsync<Player>();
+            return player;
+        }
 
     }
 }

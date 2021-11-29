@@ -1,10 +1,10 @@
-﻿@page "/buydecisions"
+﻿@page "/buydecisionsincl"
 @inject ISignalService SignalService
 @inject NavigationManager NavigationManager
 @using System.Threading;
 	@inject IToastService toastService
 
-<PageTitle Value="Buy Decisions" />
+<PageTitle Value="Buy Decisions Incl" />
 
 <style>
 
@@ -176,12 +176,13 @@ else
 		t.Elapsed += async (s, e) =>
 		{
 			CoinPrices = await SignalService.GetBuyables();
-
+			CoinPrices=CoinPrices.Where(x=>x.IsIncludedForTrading==true).ToList();
 			await InvokeAsync(StateHasChanged);
 		};
 		t.Start();
 
 		CoinPrices = await SignalService.GetBuyables();
+		CoinPrices=CoinPrices.Where(x=>x.IsIncludedForTrading==true).ToList();
 	}
 
 
