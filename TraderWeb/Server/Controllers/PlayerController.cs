@@ -67,6 +67,7 @@ namespace TraderWeb.Server.Controllers
                 if (player != null)
                 {
                     player.ForceSell = true;
+                    player.SellAtPrice = null;
                     _db.Update(player);
                     await _db.SaveChangesAsync();
                 }
@@ -122,7 +123,7 @@ namespace TraderWeb.Server.Controllers
             firstPlayer.Quantity = totalQty;
             firstPlayer.BuyCommision = totalbuyCommission;
             firstPlayer.TotalBuyCost = totalbuyCost;
-            firstPlayer.BuyCoinPrice = totalbuycoinPrice / players.Count;
+            firstPlayer.BuyCoinPrice = totalbuyCost / totalQty;
             firstPlayer.TotalSellAmount = totalsellAmount;
             firstPlayer.TotalCurrentValue = totalCurrentValue;
             firstPlayer.SellCommision = totalSellCommision;
@@ -131,7 +132,7 @@ namespace TraderWeb.Server.Controllers
             firstPlayer.ProfitLossAmt = totalProfitAmount;
             firstPlayer.BuyAtPrice = 0;
             firstPlayer.ForceSell = false;
-            
+            firstPlayer.IsTracked = true;
             _db.Player.Update(firstPlayer);
 
             foreach (var player in _db.Player.Where(x => x.Name != firstPlayer.Name &&x.Pair==pair &&x.IsTrading==true))
@@ -193,7 +194,6 @@ namespace TraderWeb.Server.Controllers
         public async Task<IActionResult> AddPlayer(string emtpyString)
         {
 
-
             int maxNumber = 0;
 
             var players = await _db.Player.ToListAsync();
@@ -209,7 +209,7 @@ namespace TraderWeb.Server.Controllers
             newPlayer.BuyBelowPerc = players[0].BuyBelowPerc;
             newPlayer.SellBelowPerc = players[0].SellBelowPerc;
             newPlayer.SellAbovePerc = players[0].SellAbovePerc;
-            newPlayer.DontSellBelowPerc = players[0].DontSellBelowPerc;
+            newPlayer.LossSellBelow = players[0].LossSellBelow;
             newPlayer.BuyOrSell = string.Empty;
             newPlayer.DayHigh = 0;
             newPlayer.DayLow = 0;
@@ -229,7 +229,7 @@ namespace TraderWeb.Server.Controllers
             newPlayer.CurrentCoinPrice = 0;
             newPlayer.LastRoundProfitPerc = 0;
             newPlayer.ProfitLossChanges = null;
-            newPlayer.isSellAllowed = false;
+            newPlayer.isSellAllowed = true;
             newPlayer.HardSellPerc = 0;
             newPlayer.isBuyOrderCompleted = false;
             newPlayer.isBuyAllowed = true;
@@ -237,6 +237,7 @@ namespace TraderWeb.Server.Controllers
             newPlayer.ForceSell = false;
             newPlayer.BuyAtPrice = 0;
             newPlayer.SellAtPrice = 0;
+            newPlayer.IsTracked=true;
 
             await _db.Player.AddAsync(newPlayer);
             await _db.SaveChangesAsync();

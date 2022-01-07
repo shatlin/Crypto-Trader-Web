@@ -280,7 +280,9 @@ namespace TraderWeb.Server.Controllers
         public async Task<IActionResult> GetBuyDecisions()
         {
             //    var playingpairs=await _db.Player.Where(x=>x.IsTrading==true).Select(x=>x.Pair).Distinct().ToListAsync();
-            var res = await _db.MyCoins.OrderByDescending(x => x.DayVolumeUSDT).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
+            //    var res = await _db.MyCoins.OrderByDescending(x => x.DayPriceDiff).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
+
+            var res = await _db.MyCoins.OrderByDescending(x => x.DayPriceDiff).ToListAsync(); //&& !playingpairs.Contains(x.Pair)
             return Ok(res);
         }
 

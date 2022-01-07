@@ -17,7 +17,7 @@ namespace TraderWeb.Server.Data
             builder.Property(e => e.DayLow).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.BuyBelowPerc).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.SellBelowPerc).IsRequired().HasColumnType("decimal(30, 12)");
-            builder.Property(e => e.DontSellBelowPerc).IsRequired().HasColumnType("decimal(30, 12)");
+            builder.Property(e => e.LossSellBelow).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.BuyCoinPrice).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.CurrentCoinPrice).IsRequired().HasColumnType("decimal(30, 12)");
             builder.Property(e => e.Quantity).IsRequired().HasColumnType("decimal(30, 12)");

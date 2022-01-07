@@ -17,7 +17,7 @@ namespace TraderWeb.Shared
         public bool isBuyAllowed { get; set; }
         public bool isSellAllowed { get; set; }
         public bool ForceSell { get; set; }
-
+        public bool IsTracked { get; set; }
         public decimal? DayHigh { get; set; }
         public decimal? DayLow { get; set; }
 
@@ -28,7 +28,7 @@ namespace TraderWeb.Shared
         public decimal? SellBelowPerc { get; set; }
 
         public decimal? SellAbovePerc { get; set; }
-        public decimal? DontSellBelowPerc { get; set; }
+        public decimal? LossSellBelow { get; set; }
         public decimal? HardSellPerc { get; set; }
         public bool isBuyOrderCompleted { get; set; }
         public decimal? BuyCoinPrice { get; set; }
